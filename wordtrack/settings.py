@@ -3,11 +3,11 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = "django-insecure-+1tb68&ak$^pm+h-isuht=lf5%qkgdqn71l4$m&et!eg94yv=9"
+SECRET_KEY = "django-insecure-+1tb68&ak$^pm+h-isuht=lf5%qkgdqn71l4$m&et!1kdjSj8*d$7dhfNxlap"
 
-DEBUG = False
+DEBUG = True 
 
-ALLOWED_HOSTS = ["0.0.0.0", "127.0.0.1"]
+ALLOWED_HOSTS = ["wordtrack.elisei.nl"]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -82,3 +82,5 @@ USE_TZ = True
 STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+CSRF_TRUSTED_ORIGINS = ['https://wordtrack.elisei.nl']

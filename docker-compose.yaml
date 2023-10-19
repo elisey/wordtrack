@@ -8,6 +8,8 @@ services:
       - ./data:/app/data
     networks:
       - nginx-network
+    environment:
+      - HOST_NAME="https://wordtrack.elisei.nl/"
 
 networks:
   nginx-network:
