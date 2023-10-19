@@ -11,4 +11,5 @@ services:
 
 networks:
   nginx-network:
+    external: true
     name: nginx-network
