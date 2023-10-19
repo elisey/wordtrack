@@ -5,7 +5,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = "django-insecure-+1tb68&ak$^pm+h-isuht=lf5%qkgdqn71l4$m&et!1kdjSj8*d$7dhfNxlap"
 
-DEBUG = True 
+DEBUG = True
 
 ALLOWED_HOSTS = ["wordtrack.elisei.nl"]
 
@@ -83,4 +83,4 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-CSRF_TRUSTED_ORIGINS = ['https://wordtrack.elisei.nl']
+CSRF_TRUSTED_ORIGINS = ["https://wordtrack.elisei.nl"]

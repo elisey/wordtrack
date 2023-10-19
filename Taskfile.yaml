@@ -48,19 +48,16 @@ tasks:
 
   build:
     cmds:
-      - docker build -t wordtrack:latest .
+      - docker compose build
   run:
     cmds:
-      - docker run -d --restart always --name worder_contrainer wordtrack:latest
-  run-dev:
-    cmds:
-      - docker run -p 8001:8000 --name worder_contrainer wordtrack:latest
+      - docker compose up -d
   stop:
     cmds:
-      - docker stop worder_contrainer
+      - docker compose stop
   logs:
     cmds:
-      - docker logs  worder_contrainer
+      - docker compose wordtrack_app
   remove:
     cmds:
-      - docker rm worder_contrainer
+      - docker compose down
