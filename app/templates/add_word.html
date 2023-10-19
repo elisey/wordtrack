@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add word</title>
+</head>
+<body>
+<h1>Add word</h1>
+<a href="/">Trane</a>
+<a href="admin">Admin</a>
+<p></p>
+<form id="myForm" action="/word" method="post">
+    {% csrf_token %}
+    <label for="native">Native:</label>
+    <input type="text" id="native" name="native" placeholder="Enter native" required><br>
+
+    <label for="foreign">Foreign:</label>
+    <input type="text" id="foreign" name="foreign" placeholder="Enter foreign" required><br>
+
+    <label for="group">Group:</label>
+    <input type="text" id="group" name="group" placeholder="Enter group" required><br>
+
+    <button type="submit">Submit</button>
+</form>
+
+<p id="response"></p>
+
+<script>
+    // Function to store the "group" value in local storage
+    function storeGroupValue() {
+        var groupInput = document.getElementById("group");
+        var groupValue = groupInput.value;
+        localStorage.setItem("groupValue", groupValue);
+    }
+
+    // Function to load the "group" value from local storage when the page is loaded
+    function loadGroupValue() {
+        var groupInput = document.getElementById("group");
+        var groupValue = localStorage.getItem("groupValue");
+        if (groupValue) {
+            groupInput.value = groupValue;
+        }
+    }
+
+    // Add an event listener to the "group" input field to store the value when it changes
+    document.getElementById("group").addEventListener("change", storeGroupValue);
+
+    // Load the "group" value from local storage when the page is loaded
+    window.addEventListener("load", loadGroupValue);
+</script>
+
+</body>
+</html>

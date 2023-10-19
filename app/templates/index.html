@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Translation Checker</title>
+    <style>
+        .translation {
+            background-color: green;
+        }
+
+        .translation-wrong {
+            background-color: red;
+        }
+    </style>
+</head>
+<body>
+<h1>Word Translation Checker</h1>
+<a href="add_word">Add word</a>
+<a href="admin">Admin</a>
+
+<div id="word-container">
+    <p><strong>Word:</strong> <span id="word"></span></p>
+    <input type="text" id="guess-word" placeholder="Enter your guess and press Enter">
+    <div id="translation-container" style="display: none;">
+        <p><strong>Translation:</strong> <span id="translation"></span></p>
+        <div id="commands-container"></div>
+    </div>
+</div>
+
+<script>
+    const wordContainer = document.getElementById("word-container");
+    const wordSpan = document.getElementById("word");
+    const guessInput = document.getElementById("guess-word");
+    const translationContainer = document.getElementById("translation-container");
+    const translationSpan = document.getElementById("translation");
+    const commandsContainer = document.getElementById("commands-container");
+    let gdata = {}
+
+    async function fetchWordData() {
+        try {
+            const response = await fetch('/random_word');
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+            gdata = data
+            displayWordData(data);
+
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    function displayWordData(data) {
+        wordSpan.textContent = gdata.native;
+        guessInput.addEventListener("keydown", handleEnterKey);
+        guessInput.focus()
+    }
+
+    function handleEnterKey(event) {
+        if (event.key === "Enter") {
+            checkGuess();
+        }
+        if (event.key == "1") {
+            document.getElementById("commandButton1").click();
+        }
+        if (event.key == "2") {
+            document.getElementById("commandButton2").click();
+        }
+        if (event.key == "3") {
+            document.getElementById("commandButton3").click();
+        }
+        if (event.key == "4") {
+            document.getElementById("commandButton4").click();
+        }
+        if (event.key == "5") {
+            document.getElementById("commandButton5").click();
+        }
+        if (event.key == "6") {
+            document.getElementById("commandButton6").click();
+        }
+    }
+
+    function checkGuess() {
+        const userGuess = guessInput.value.trim().toLowerCase();
+        const isCorrect = userGuess === gdata.foreign.toLowerCase();
+
+        if (isCorrect) {
+            translationContainer.style.backgroundColor = "green";
+        } else {
+            translationContainer.style.backgroundColor = "red";
+        }
+        translationSpan.textContent = gdata.foreign;
+
+        displayCommands();
+    }
+
+    function displayCommands() {
+        commandsContainer.innerHTML = '';
+        gdata.commands.forEach((command, index) => {
+            const button = document.createElement("button");
+            button.setAttribute("id", "commandButton" + String(index + 1))
+            button.textContent = String(index + 1) + " " + command.text;
+            button.addEventListener("click", () => {
+                sendPostRequest(command.command_id, gdata.word_id);
+            });
+            commandsContainer.appendChild(button);
+        });
+        translationContainer.style.display = 'block';
+    }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    async function sendPostRequest(commandId, word_id) {
+        const csrftoken = getCookie('csrftoken');
+        try {
+            const response = await fetch('/send_answer', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken,
+                },
+                body: JSON.stringify({word_id: word_id, command_id: commandId}),
+            });
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+        location.reload();
+    }
+    
+    fetchWordData();
+</script>
+</body>
+</html>

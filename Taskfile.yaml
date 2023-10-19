@@ -1,0 +1,66 @@
+# https://taskfile.dev
+
+version: '3'
+
+tasks:
+  mypy:
+    cmds:
+      - mypy .
+  black:fix:
+    cmds:
+      - black .
+  black:check:
+    cmds:
+      - black --check .
+  isort:fix:
+    cmds:
+      - isort .
+  isort:check:
+    cmds:
+      - isort --check .
+  flake8:
+    cmds:
+      - flake8 .
+  ruff:
+    cmds:
+      - ruff .
+  pylint:
+    cmds:
+      - pylint app
+  format:
+    - task: black:fix
+    - task: isort:fix
+  lint:
+    deps:
+      - task: black:check
+      - task: isort:check
+      - task: mypy
+      - task: flake8
+      - task: ruff
+      - task: pylint
+  test:
+    cmds:
+      - pytest tests
+  all:
+    - task: format
+    - task: lint
+    #- task: test
+
+  build:
+    cmds:
+      - docker build -t wordtrack:latest .
+  run:
+    cmds:
+      - docker run -d --restart always --name worder_contrainer wordtrack:latest
+  run-dev:
+    cmds:
+      - docker run -p 8001:8000 --name worder_contrainer wordtrack:latest
+  stop:
+    cmds:
+      - docker stop worder_contrainer
+  logs:
+    cmds:
+      - docker logs  worder_contrainer
+  remove:
+    cmds:
+      - docker rm worder_contrainer

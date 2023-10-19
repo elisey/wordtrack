@@ -1,0 +1,8 @@
+app/service/data/
+*.sqlite3
+*.csv
+__pycache__
+*.bak
+.pytest_cache
+.mypy_cache
+.ruff_cache
