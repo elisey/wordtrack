@@ -182,6 +182,8 @@ class WordPicker:
             word_to_learn = self.__get_learning_word(user_id)
         else:
             word_to_learn = self.__get_new_word(user_id)
+            if not word_to_learn:
+                word_to_learn = self.__get_learning_word(user_id)
 
         if word_to_learn and word_to_repeat:
             if random.randrange(0, 10) <= 7:
