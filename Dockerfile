@@ -13,4 +13,4 @@ RUN pip install --no-cache-dir poetry && \
 COPY . /app/
 EXPOSE 8000
 
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "worder.wsgi:application"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "wordtrack.wsgi:application"]
