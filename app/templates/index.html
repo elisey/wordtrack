@@ -53,7 +53,12 @@
     }
 
     function displayWordData(data) {
-        wordSpan.textContent = gdata.native;
+        if (gdata.inverted) {
+            wordSpan.textContent = gdata.foreign;
+        } else {
+            wordSpan.textContent = gdata.native;
+        }
+
         guessInput.addEventListener("keydown", handleEnterKey);
         guessInput.focus()
     }
@@ -84,14 +89,22 @@
 
     function checkGuess() {
         const userGuess = guessInput.value.trim().toLowerCase();
-        const isCorrect = userGuess === gdata.foreign.toLowerCase();
+        let isCorrect = userGuess === gdata.foreign.toLowerCase();
+        if (gdata.inverted) {
+            isCorrect = userGuess === gdata.native.toLowerCase();
+        }
+
 
         if (isCorrect) {
             translationContainer.style.backgroundColor = "green";
         } else {
             translationContainer.style.backgroundColor = "red";
         }
-        translationSpan.textContent = gdata.foreign;
+        if (gdata.inverted) {
+            translationSpan.textContent = gdata.native;
+        } else {
+            translationSpan.textContent = gdata.foreign;
+        }
 
         displayCommands();
     }
@@ -144,7 +157,7 @@
         }
         location.reload();
     }
-    
+
     fetchWordData();
 </script>
 </body>
