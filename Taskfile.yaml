@@ -57,7 +57,7 @@ tasks:
       - docker compose stop
   logs:
     cmds:
-      - docker compose logs wordtrack_app
+      - docker compose logs -f wordtrack_app
   remove:
     cmds:
       - docker compose down
