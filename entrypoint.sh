@@ -2,4 +2,4 @@
 
 python manage.py collectstatic  --no-input --clear
 python manage.py migrate --noinput
-gunicorn --bind 0.0.0.0:8000 wordtrack.wsgi:application
+gunicorn --config gunicorn_config.py wordtrack.wsgi:application
