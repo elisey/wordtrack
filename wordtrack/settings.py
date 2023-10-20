@@ -1,13 +1,19 @@
+# type: ignore
+
+import os
 from pathlib import Path
 
+from dotenv import load_dotenv
+
+
+load_dotenv("data/.env")
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = "django-insecure-+1tb68&ak$^pm+h-isuht=lf5%qkgdqn71l4$m&et!1kdjSj8*d$7dhfNxlap"
-
-DEBUG = True
-
-ALLOWED_HOSTS = ["wordtrack.elisei.nl"]
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
+DEBUG = os.getenv("DEBUG").lower() == "true"
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
+CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS").split(",")
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -83,5 +89,3 @@ STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-CSRF_TRUSTED_ORIGINS = ["https://wordtrack.elisei.nl"]
