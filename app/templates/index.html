@@ -18,6 +18,8 @@
 <h1>Word Translation Checker</h1>
 <a href="add_word">Add word</a>
 <a href="admin">Admin</a>
+<button id="playButton">Pronounce</button>
+<audio id="audioPlayer" controls hidden="true"></audio>
 
 <div id="word-container">
     <p><strong>Word:</strong> <span id="word"></span></p>
@@ -36,6 +38,18 @@
     const translationSpan = document.getElementById("translation");
     const commandsContainer = document.getElementById("commands-container");
     let gdata = {}
+    let audioPlayer = 0
+
+
+    function initAudio() {
+        audioPlayer = document.getElementById('audioPlayer');
+        let audioUrl = '/word/' + gdata.word_id + '/audio';
+        audioPlayer.src = audioUrl;
+    }
+
+    document.getElementById('playButton').addEventListener('click', function () {
+        audioPlayer.play();
+    });
 
     async function fetchWordData() {
         try {
@@ -45,6 +59,7 @@
             }
             const data = await response.json();
             gdata = data
+            initAudio()
             displayWordData(data);
 
         } catch (error) {
@@ -54,6 +69,7 @@
 
     function displayWordData(data) {
         if (gdata.inverted) {
+            audioPlayer.play()
             wordSpan.textContent = gdata.foreign;
         } else {
             wordSpan.textContent = gdata.native;
@@ -89,11 +105,11 @@
 
     function checkGuess() {
         const userGuess = guessInput.value.trim().toLowerCase();
-        let isCorrect = userGuess === gdata.foreign.toLowerCase();
-        if (gdata.inverted) {
-            isCorrect = userGuess === gdata.native.toLowerCase();
+        let isCorrect = userGuess === gdata.native.toLowerCase();
+        if (!gdata.inverted) {
+            isCorrect = userGuess === gdata.foreign.toLowerCase();
+            audioPlayer.play()
         }
-
 
         if (isCorrect) {
             translationContainer.style.backgroundColor = "green";

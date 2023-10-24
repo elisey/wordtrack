@@ -1,11 +1,13 @@
 import json
 
 import pydantic
+from django.conf import settings
 from django.http import HttpRequest, HttpResponse, HttpResponseForbidden, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 
 from app.service.commands import Command as CommandModel
 from app.service.commands import Commands, apply_command
+from app.service.speech import SpeechStorage
 from app.service.word import ExerciseDirection, Status, WordPicker
 
 
@@ -84,7 +86,7 @@ def send_answer(request: HttpRequest) -> HttpResponse:
     word_picker = WordPicker()
     word = word_picker.get_by_id(data.word_id, request.user.pk)
     if word is None:
-        return HttpResponse(status=400, text="Invalid word id")
+        return HttpResponse("Invalid word id", status=400)
 
     apply_command(command, word)
     word.save()
@@ -93,7 +95,7 @@ def send_answer(request: HttpRequest) -> HttpResponse:
 
 def add_word(request: HttpRequest) -> HttpResponse:
     if request.method != "POST":
-        return HttpResponse(status=405, text="Invalid method")
+        return HttpResponse("Invalid method", status=405)
     if not request.user.is_authenticated:
         return HttpResponseForbidden("You must be logged in to access this page.")
 
@@ -102,8 +104,25 @@ def add_word(request: HttpRequest) -> HttpResponse:
     group = request.POST.get("group")
 
     if not native or not foreign or group is None:
-        return HttpResponse(status=400, text="Both native and foreign parameters are required.")
+        return HttpResponse("Both native and foreign parameters are required.", status=400)
 
     WordPicker().create_new(request.user.pk, native, foreign, group).save()
 
     return HttpResponseRedirect("add_word")
+
+
+def get_audio(request: HttpRequest, word_id: int) -> HttpResponse:
+    if request.method != "GET":
+        return HttpResponse("Invalid method", status=405)
+    if not request.user.is_authenticated:
+        return HttpResponseForbidden("You must be logged in to access this page.")
+
+    word = WordPicker().get_by_id(word_id, request.user.pk)
+    if word is None:
+        return HttpResponse("Invalid word id", status=400)
+
+    assert word.id
+
+    audio_file = SpeechStorage(settings.AUDIO_FILES_DIR).get_audio(word.id, word.foreign)
+
+    return HttpResponse(content=audio_file, content_type="audio/mp3")

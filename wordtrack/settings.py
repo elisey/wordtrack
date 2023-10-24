@@ -15,6 +15,8 @@ DEBUG = os.getenv("DEBUG").lower() == "true"
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
 CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS").split(",")
 
+AUDIO_FILES_DIR: Path = BASE_DIR / "data" / "audio"
+
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
