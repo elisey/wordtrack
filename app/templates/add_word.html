@@ -10,16 +10,17 @@
 <p></p>
 <form id="myForm" action="/word" method="post">
     {% csrf_token %}
-    <label for="native">Native:</label>
-    <input type="text" id="native" name="native" placeholder="Enter native" required><br>
 
     <label for="foreign">Foreign:</label>
-    <input type="text" id="foreign" name="foreign" placeholder="Enter foreign" required><br>
+    <input type="text" id="foreign" name="foreign" placeholder="foreign" required><br>
+
+    <label for="native">Native:</label>
+    <input type="text" id="native" name="native" placeholder="native" required><br>
 
     <label for="group">Group:</label>
     <input type="text" id="group" name="group" placeholder="Enter group" required><br>
 
-    <button type="submit">Submit</button>
+    <button type="submit">Add</button>
 </form>
 
 <p id="response"></p>
