@@ -4,6 +4,7 @@ import enum
 import random
 import typing
 
+import django
 from django.db.models import QuerySet
 
 from app.service.difficulty_multipliers import Difficulty, apply_multiplier
@@ -11,6 +12,10 @@ from app.service.difficulty_multipliers import Difficulty, apply_multiplier
 from ..models import Status as StatusModel  # type: ignore[attr-defined]
 from ..models import Word as WordModel  # type: ignore[attr-defined]
 from .learned_counter_repository import LearnCounter
+
+
+class AlreadyExists(Exception):
+    """Word already exists."""
 
 
 class Status(enum.StrEnum):
@@ -107,32 +112,36 @@ class Word:
         self.__invert_repetition_direction()
 
     def save(self) -> None:
-        if self.id:
-            WordModel.objects.filter(pk=self.id).update(
-                user_id=self.user_id,
-                native=self.native,
-                foreign=self.foreign,
-                status=self.status,
-                last_repeated=self.last_repeated,
-                repeat_on=self.repeat_on,
-                learning_stage=self.learning_stage,
-                repetition_period=self.repetition_period,
-                next_repetition_direction=self.next_repetition_direction,
-                group=self.group,
-            )
-        else:
-            WordModel.objects.create(
-                user_id=self.user_id,
-                native=self.native,
-                foreign=self.foreign,
-                status=self.status,
-                last_repeated=self.last_repeated,
-                repeat_on=self.repeat_on,
-                learning_stage=self.learning_stage,
-                repetition_period=self.repetition_period,
-                next_repetition_direction=self.next_repetition_direction,
-                group=self.group,
-            )
+        """Can raise AlreadyExists."""
+        try:
+            if self.id:
+                WordModel.objects.filter(pk=self.id).update(
+                    user_id=self.user_id,
+                    native=self.native,
+                    foreign=self.foreign,
+                    status=self.status,
+                    last_repeated=self.last_repeated,
+                    repeat_on=self.repeat_on,
+                    learning_stage=self.learning_stage,
+                    repetition_period=self.repetition_period,
+                    next_repetition_direction=self.next_repetition_direction,
+                    group=self.group,
+                )
+            else:
+                WordModel.objects.create(
+                    user_id=self.user_id,
+                    native=self.native,
+                    foreign=self.foreign,
+                    status=self.status,
+                    last_repeated=self.last_repeated,
+                    repeat_on=self.repeat_on,
+                    learning_stage=self.learning_stage,
+                    repetition_period=self.repetition_period,
+                    next_repetition_direction=self.next_repetition_direction,
+                    group=self.group,
+                )
+        except django.db.IntegrityError as e:
+            raise AlreadyExists from e
 
     @classmethod
     def from_model(cls, model: WordModel) -> typing.Self:

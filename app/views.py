@@ -9,7 +9,7 @@ from app.service import word_example
 from app.service.commands import Command as CommandModel
 from app.service.commands import Commands, apply_command
 from app.service.speech import SpeechStorage
-from app.service.word import ExerciseDirection, Status, WordPicker
+from app.service.word import AlreadyExists, ExerciseDirection, Status, WordPicker
 
 
 def index(request: HttpRequest) -> HttpResponse:
@@ -107,7 +107,10 @@ def add_word(request: HttpRequest) -> HttpResponse:
     if not native or not foreign or group is None:
         return HttpResponse("Both native and foreign parameters are required.", status=400)
 
-    WordPicker().create_new(request.user.pk, native, foreign, group).save()
+    try:
+        WordPicker().create_new(request.user.pk, native, foreign, group).save()
+    except AlreadyExists:
+        return HttpResponse("Word already exists.", status=400)
 
     return HttpResponseRedirect("add_word")
 
