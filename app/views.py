@@ -5,6 +5,7 @@ from django.conf import settings
 from django.http import HttpRequest, HttpResponse, HttpResponseForbidden, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 
+from app.service import word_example
 from app.service.commands import Command as CommandModel
 from app.service.commands import Commands, apply_command
 from app.service.speech import SpeechStorage
@@ -126,3 +127,21 @@ def get_audio(request: HttpRequest, word_id: int) -> HttpResponse:
     audio_file = SpeechStorage(settings.AUDIO_FILES_DIR).get_audio(word.id, word.foreign)
 
     return HttpResponse(content=audio_file, content_type="audio/mp3")
+
+
+def get_example(request: HttpRequest, word_id: int) -> HttpResponse:
+    if request.method != "GET":
+        return HttpResponse("Invalid method", status=405)
+    if not request.user.is_authenticated:
+        return HttpResponseForbidden("You must be logged in to access this page.")
+
+    word = WordPicker().get_by_id(word_id, request.user.pk)
+    if word is None:
+        return HttpResponse("Invalid word id", status=400)
+
+    assert word.id
+
+    result = word_example.get_example(word.foreign)
+    if result is None:
+        return HttpResponse("Error get an example", status=503)
+    return HttpResponse(result)

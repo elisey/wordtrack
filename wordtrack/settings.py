@@ -14,6 +14,7 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 DEBUG = os.getenv("DEBUG").lower() == "true"
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
 CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS").split(",")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 AUDIO_FILES_DIR: Path = BASE_DIR / "data" / "audio"
 

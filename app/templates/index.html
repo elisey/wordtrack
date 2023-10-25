@@ -19,6 +19,7 @@
 <a href="add_word">Add word</a>
 <a href="admin">Admin</a>
 <button id="playButton">Pronounce</button>
+<button id="getExample">Get example</button>
 <audio id="audioPlayer" controls hidden="true"></audio>
 
 <div id="word-container">
@@ -28,6 +29,10 @@
         <p><strong>Translation:</strong> <span id="translation"></span></p>
         <div id="commands-container"></div>
     </div>
+    <br>
+    <br>
+    <div hidden="true" id="exampleHead">Example:</div>
+    <div hidden="true" id="exampleLabel">some</div>
 </div>
 
 <script>
@@ -49,6 +54,27 @@
 
     document.getElementById('playButton').addEventListener('click', function () {
         audioPlayer.play();
+    });
+    document.getElementById('getExample').addEventListener('click', function () {
+        let url = '/word/' + gdata.word_id + '/example';
+        document.getElementById('exampleHead').hidden = false
+
+        fetch(url)
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.text()
+            })
+            .then((text) => {
+                console.log("Text fetched:", text);
+
+                document.getElementById('exampleLabel').innerHTML = text
+                document.getElementById('exampleLabel').hidden = false
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
     });
 
     async function fetchWordData() {
