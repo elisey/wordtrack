@@ -18,6 +18,7 @@
 <h1>Word Translation Checker</h1>
 <a href="add_word">Add word</a>
 <a href="admin">Admin</a>
+<a id="editWordLink" href="admin/app/word/0/change/">Edit word</a>
 <button id="playButton">Pronounce</button>
 <button id="getExample">Get example</button>
 <audio id="audioPlayer" controls hidden="true"></audio>
@@ -32,7 +33,7 @@
     <br>
     <br>
     <div hidden="true" id="exampleHead">Example:</div>
-    <div hidden="true" id="exampleLabel">some</div>
+    <div hidden="true" id="exampleLabel"></div>
 </div>
 
 <script>
@@ -44,7 +45,6 @@
     const commandsContainer = document.getElementById("commands-container");
     let gdata = {}
     let audioPlayer = 0
-
 
     function initAudio() {
         audioPlayer = document.getElementById('audioPlayer');
@@ -68,7 +68,6 @@
             })
             .then((text) => {
                 console.log("Text fetched:", text);
-
                 document.getElementById('exampleLabel').innerHTML = text
                 document.getElementById('exampleLabel').hidden = false
             })
@@ -87,7 +86,7 @@
             gdata = data
             initAudio()
             displayWordData(data);
-
+            document.getElementById('editWordLink').href = "admin/app/word/" + gdata.word_id + "/change/"
         } catch (error) {
             console.error('Error:', error);
         }
