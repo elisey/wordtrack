@@ -45,6 +45,9 @@ class Word(models.Model):
         default=ExerciseDirection.TO_FOREIGN,
     )
 
+    class Meta:
+        unique_together = ["user", "native", "foreign"]
+
 
 class LearnedCount(models.Model):
     date = models.DateField(unique=True)
