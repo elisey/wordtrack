@@ -63,7 +63,7 @@ tasks:
       - docker compose down
   pull:
     cmds:
-      - git fetch
+      - git pull
   update:
     - task: stop
     - task: remove
