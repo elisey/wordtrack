@@ -2,14 +2,35 @@ import json
 
 import pydantic
 from django.conf import settings
-from django.http import HttpRequest, HttpResponse, HttpResponseForbidden, HttpResponseRedirect, JsonResponse
+from django.http import (
+    FileResponse,
+    HttpRequest,
+    HttpResponse,
+    HttpResponseForbidden,
+    HttpResponseRedirect,
+    JsonResponse,
+)
 from django.shortcuts import render
+from django.views.decorators.cache import cache_control
+from django.views.decorators.http import require_GET
 
 from app.service import word_example
 from app.service.commands import Command as CommandModel
 from app.service.commands import Commands, apply_command
 from app.service.speech import SpeechStorage
 from app.service.word import AlreadyExists, ExerciseDirection, Status, WordPicker
+
+
+@require_GET
+@cache_control(max_age=60 * 60 * 24, immutable=True, public=True)  # one day
+def favicon(_: HttpRequest) -> FileResponse:
+    """
+    Serve favicon.
+
+    from https://adamj.eu/tech/2022/01/18/how-to-add-a-favicon-to-your-django-site/
+    """
+    file = (settings.BASE_DIR / "data" / "favicon.png").open("rb")
+    return FileResponse(file)
 
 
 def index(request: HttpRequest) -> HttpResponse:

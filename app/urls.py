@@ -4,6 +4,7 @@ from . import views
 
 
 urlpatterns = [
+    path("favicon.ico", views.favicon),
     path("", views.index, name="index"),
     path("add_word", views.add_word_page, name="add_word_page"),
     path("random_word", views.get_word, name="get_word"),
