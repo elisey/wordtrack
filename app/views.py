@@ -1,4 +1,5 @@
 import json
+import logging
 
 import pydantic
 from django.conf import settings
@@ -18,7 +19,7 @@ from app.service import word_example
 from app.service.commands import Command as CommandModel
 from app.service.commands import Commands, apply_command
 from app.service.speech import SpeechStorage
-from app.service.word import AlreadyExists, ExerciseDirection, Status, WordPicker
+from app.service.word import AlreadyExistsError, ExerciseDirection, Status, WordPicker
 
 
 @require_GET
@@ -70,16 +71,14 @@ def get_word(request: HttpRequest) -> HttpResponse:
 
     commands = Commands().create_commands(word)
 
-    commands_response = []
-    for command in commands:
-        commands_response.append(Command(text=command.text, command_id=command.command.value))
+    commands_response = [Command(text=command.text, command_id=command.command.value) for command in commands]
     inverted = False
     if (word.status == Status.LEARN and word.learning_stage == 2) or (
         word.status == Status.REPEAT and word.next_repetition_direction == ExerciseDirection.TO_NATIVE
     ):
         inverted = True
     body = GetWordResponse(
-        word_id=word.id,
+        word_id=word.word_id,
         native=word.native,
         foreign=word.foreign,
         inverted=inverted,
@@ -101,7 +100,7 @@ def send_answer(request: HttpRequest) -> HttpResponse:
 
     body_str = request.body.decode("utf-8")
     body = json.loads(body_str)
-    print(body)
+    logging.info(body)
     data = SendWordRequest(**body)
 
     command = CommandModel(data.command_id)
@@ -130,7 +129,7 @@ def add_word(request: HttpRequest) -> HttpResponse:
 
     try:
         WordPicker().create_new(request.user.pk, native, foreign, group).save()
-    except AlreadyExists:
+    except AlreadyExistsError:
         return HttpResponse("Word already exists.", status=400)
 
     return HttpResponseRedirect("add_word")
@@ -146,9 +145,9 @@ def get_audio(request: HttpRequest, word_id: int) -> HttpResponse:
     if word is None:
         return HttpResponse("Invalid word id", status=400)
 
-    assert word.id
+    assert word.word_id
 
-    audio_file = SpeechStorage(settings.AUDIO_FILES_DIR).get_audio(word.id, word.foreign)
+    audio_file = SpeechStorage(settings.AUDIO_FILES_DIR).get_audio(word.word_id, word.foreign)
 
     return HttpResponse(content=audio_file, content_type="audio/mp3")
 
@@ -163,7 +162,7 @@ def get_example(request: HttpRequest, word_id: int) -> HttpResponse:
     if word is None:
         return HttpResponse("Invalid word id", status=400)
 
-    assert word.id
+    assert word.word_id
 
     result = word_example.get_example(word.foreign)
     if result is None:

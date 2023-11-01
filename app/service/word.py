@@ -14,7 +14,7 @@ from ..models import Word as WordModel  # type: ignore[attr-defined]
 from .learned_counter_repository import LearnCounter
 
 
-class AlreadyExists(Exception):
+class AlreadyExistsError(Exception):
     """Word already exists."""
 
 
@@ -32,7 +32,7 @@ class ExerciseDirection(enum.StrEnum):
 
 @dataclasses.dataclass
 class Word:
-    id: int | None
+    word_id: int | None
     native: str
     foreign: str
     status: Status
@@ -112,10 +112,10 @@ class Word:
         self.__invert_repetition_direction()
 
     def save(self) -> None:
-        """Can raise AlreadyExists."""
+        """Can raise AlreadyExistsError."""
         try:
-            if self.id:
-                WordModel.objects.filter(pk=self.id).update(
+            if self.word_id:
+                WordModel.objects.filter(pk=self.word_id).update(
                     user_id=self.user_id,
                     native=self.native,
                     foreign=self.foreign,
@@ -141,12 +141,12 @@ class Word:
                     group=self.group,
                 )
         except django.db.IntegrityError as e:
-            raise AlreadyExists from e
+            raise AlreadyExistsError from e
 
     @classmethod
     def from_model(cls, model: WordModel) -> typing.Self:
         return cls(
-            id=model.pk,
+            word_id=model.pk,
             user_id=model.user_id,
             native=model.native,
             foreign=model.foreign,
@@ -210,7 +210,7 @@ class WordPicker:
     def create_new(self, user_id: int, native: str, foreign: str, group: str) -> Word:
         today = datetime.date.today()
         return Word(
-            id=None,
+            word_id=None,
             user_id=user_id,
             native=native,
             foreign=foreign,

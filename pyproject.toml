@@ -45,4 +45,28 @@ line_length = 120
 profile = "black"
 
 [tool.ruff]
-ignore = ["E501"]
+ignore = ["E501", "ANN101", "ANN102", "S311", "S101", "PLR2004", "RUF001"]
+line-length = 120
+extend-select = [
+  "F",
+  "W",
+  "E",
+  "N",
+  "ANN",
+  "ASYNC",
+  "S",
+  "BLE",
+  "FBT",
+  "B",
+  "A",
+  "C4",
+  #"DTZ",
+  "T10",
+  "T20",
+  "PIE",
+  "ERA",
+  "PL",
+  "PERF",
+  "FURB",
+  #"RUF",
+]

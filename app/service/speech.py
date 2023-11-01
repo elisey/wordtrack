@@ -4,7 +4,7 @@ from google_speech import Speech  # type:ignore[import-untyped]
 
 
 class SpeechStorage:
-    def __init__(self, storage_pass: pathlib.Path):
+    def __init__(self, storage_pass: pathlib.Path) -> None:
         self._storage_pass = storage_pass
 
     def get_audio(self, item_id: int, word: str) -> bytes:
