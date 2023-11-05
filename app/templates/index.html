@@ -152,7 +152,16 @@
 
     function displayCommands() {
         commandsContainer.innerHTML = '';
-        gdata.commands.forEach((command, index) => {
+        if (gdata.commands.length === 0) {
+          const button = document.createElement("button");
+            button.setAttribute("id", "commandButton1")
+            button.textContent = "1 Next";
+            button.addEventListener("click", () => {
+                location.reload();
+            });
+            commandsContainer.appendChild(button);
+        } else {
+            gdata.commands.forEach((command, index) => {
             const button = document.createElement("button");
             button.setAttribute("id", "commandButton" + String(index + 1))
             button.textContent = String(index + 1) + " " + command.text;
@@ -160,7 +169,9 @@
                 sendPostRequest(command.command_id, gdata.word_id);
             });
             commandsContainer.appendChild(button);
-        });
+            });
+        }
+
         translationContainer.style.display = 'block';
     }
 

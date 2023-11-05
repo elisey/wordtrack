@@ -1,5 +1,6 @@
 import json
 import logging
+import random
 
 import pydantic
 from django.conf import settings
@@ -19,7 +20,7 @@ from app.service import word_example
 from app.service.commands import Command as CommandModel
 from app.service.commands import Commands, apply_command
 from app.service.speech import SpeechStorage
-from app.service.word import AlreadyExistsError, ExerciseDirection, Status, WordPicker
+from app.service.word import AlreadyExistsError, WordPicker
 
 
 @require_GET
@@ -63,20 +64,18 @@ class GetWordResponse(pydantic.BaseModel):
 def get_word(request: HttpRequest) -> HttpResponse:
     if not request.user.is_authenticated:
         return HttpResponseForbidden("You must be logged in to access this page.")
+    user_id = request.user.pk
     word_picker = WordPicker()
-    word = word_picker.get_word_for_learning(request.user.pk)
 
-    if not word:
-        return HttpResponse("Done.")
+    if word := word_picker.get_word_for_learning(user_id):
+        commands = Commands().create_commands(word)
+        commands_response = [Command(text=command.text, command_id=command.command.value) for command in commands]
+        inverted = word.is_inverted
+    else:
+        word = word_picker.get_any_word(user_id)
+        commands_response = []
+        inverted = random.choice([True, False, False])
 
-    commands = Commands().create_commands(word)
-
-    commands_response = [Command(text=command.text, command_id=command.command.value) for command in commands]
-    inverted = False
-    if (word.status == Status.LEARN and word.learning_stage == 2) or (
-        word.status == Status.REPEAT and word.next_repetition_direction == ExerciseDirection.TO_NATIVE
-    ):
-        inverted = True
     body = GetWordResponse(
         word_id=word.word_id,
         native=word.native,

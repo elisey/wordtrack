@@ -18,6 +18,10 @@ class AlreadyExistsError(Exception):
     """Word already exists."""
 
 
+class NotFoundError(Exception):
+    pass
+
+
 class Status(enum.StrEnum):
     NEW = "NEW"
     LEARN = "LEARN"
@@ -43,6 +47,15 @@ class Word:
     next_repetition_direction: ExerciseDirection
     user_id: int
     group: str
+
+    @property
+    def is_inverted(self) -> bool:
+        is_learning_stage_2 = self.status == Status.LEARN and self.learning_stage == 2
+        is_repeat_to_native = (
+            self.status == Status.REPEAT and self.next_repetition_direction == ExerciseDirection.TO_NATIVE
+        )
+
+        return is_learning_stage_2 or is_repeat_to_native
 
     def __to_repeat_state(self, period_minutes: int) -> None:
         self.status = Status.REPEAT
@@ -184,6 +197,13 @@ class WordPicker:
         today = datetime.date.today()
         qs = WordModel.objects.filter(repeat_on__lte=today, status=StatusModel.REPEAT, user_id=user_id)
         return self.__get_random_from_qs(qs)
+
+    def get_any_word(self, user_id: int) -> Word:
+        qs = WordModel.objects.filter(user_id=user_id)
+        word = self.__get_random_from_qs(qs)
+        if word is None:
+            raise NotFoundError
+        return word
 
     def get_word_for_learning(self, user_id: int) -> Word | None:
         word_to_repeat = self.__get_repeat_word(user_id)
