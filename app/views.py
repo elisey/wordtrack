@@ -19,6 +19,7 @@ from django.views.decorators.http import require_GET
 from app.service import word_example
 from app.service.commands import Command as CommandModel
 from app.service.commands import Commands, apply_command
+from app.service.learning_history import add_history_event
 from app.service.speech import SpeechStorage
 from app.service.word import AlreadyExistsError, WordPicker
 
@@ -97,6 +98,7 @@ def send_answer(request: HttpRequest) -> HttpResponse:
     if not request.user.is_authenticated:
         return HttpResponseForbidden("You must be logged in to access this page.")
 
+    user_id = request.user.pk
     body_str = request.body.decode("utf-8")
     body = json.loads(body_str)
     logging.info(body)
@@ -104,12 +106,13 @@ def send_answer(request: HttpRequest) -> HttpResponse:
 
     command = CommandModel(data.command_id)
     word_picker = WordPicker()
-    word = word_picker.get_by_id(data.word_id, request.user.pk)
+    word = word_picker.get_by_id(data.word_id, user_id)
     if word is None:
         return HttpResponse("Invalid word id", status=400)
 
     apply_command(command, word)
     word.save()
+    add_history_event(user_id, data.word_id, command)
     return HttpResponse()
 
 

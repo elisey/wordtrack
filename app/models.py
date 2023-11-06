@@ -19,6 +19,20 @@ class ExerciseDirection(models.TextChoices):
     TO_FOREIGN = "TO_FOREIGN", _("To Foreign")  # normal
 
 
+class Commands(models.TextChoices):
+    LEARNING_HARD = "LEARNING_HARD", _("Learning Hard")
+    LEARNING_NORMAL = "LEARNING_NORMAL", _("Learning Normal")
+    LEARNING_KNOW = "LEARNING_KNOW", _("Learning Know")
+    LEARNING_AFTER_MONTH = "LEARNING_AFTER_MONTH", _("Learning After a Month")
+    LEARNING_DELETE = "LEARNING_DELETE", _("Learning Delete")
+
+    REPEAT_RESET = "REPEAT_RESET", _("Repeat Reset")
+    REPEAT_AGAIN = "REPEAT_AGAIN", _("Repeat Again")
+    REPEAT_HARD = "REPEAT_HARD", _("Repeat Hard")
+    REPEAT_NORMAL = "REPEAT_NORMAL", _("Repeat Normal")
+    REPEAT_EASY = "REPEAT_EASY", _("Repeat Easy")
+
+
 class Word(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     native = TextField()
@@ -51,3 +65,10 @@ class Word(models.Model):
 class LearnedCount(models.Model):
     date = models.DateField(unique=True)
     count = models.IntegerField()
+
+
+class LearningHistory(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    word = models.ForeignKey(Word, on_delete=models.CASCADE)
+    command = models.CharField(max_length=20, choices=Commands.choices)
+    created_at = models.DateTimeField(auto_now_add=True)
