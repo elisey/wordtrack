@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sample HTML Page</title>
+</head>
+<body>
+    <h1>Today text</h1>
+    <a href="/">Training</a>
+    <a href="add_word">Add word</a>
+    <a href="admin">Admin</a>
+    <br>
+    <br>
+    {% for sentence in sentences %}
+    {{ sentence }}
+    <br>
+    {% endfor %}
+</body>
+</html>

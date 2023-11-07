@@ -19,9 +19,10 @@ from django.views.decorators.http import require_GET
 from app.service import word_example
 from app.service.commands import Command as CommandModel
 from app.service.commands import Commands, apply_command
-from app.service.learning_history import add_history_event
+from app.service.learning_history import add_history_event, get_todays_hard_words
 from app.service.speech import SpeechStorage
 from app.service.word import AlreadyExistsError, WordPicker
+from app.service.word_example import generate_today_text
 
 
 @require_GET
@@ -38,13 +39,13 @@ def favicon(_: HttpRequest) -> FileResponse:
 
 def index(request: HttpRequest) -> HttpResponse:
     if not request.user.is_authenticated:
-        return HttpResponseForbidden("You must be logged in to access this page.")
+        return HttpResponseRedirect("admin/login/?next=/")
     return render(request, "index.html")
 
 
 def add_word_page(request: HttpRequest) -> HttpResponse:
     if not request.user.is_authenticated:
-        return HttpResponseForbidden("You must be logged in to access this page.")
+        return HttpResponseRedirect("admin/login/?next=/add_word")
     return render(request, "add_word.html")
 
 
@@ -170,3 +171,22 @@ def get_example(request: HttpRequest, word_id: int) -> HttpResponse:
     if result is None:
         return HttpResponse("Error get an example", status=503)
     return HttpResponse(result)
+
+
+def today_text(request: HttpRequest) -> HttpResponse:
+    if request.method != "GET":
+        return HttpResponse("Invalid method", status=405)
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect("admin/login/?next=/today")
+
+    words = get_todays_hard_words(request.user.pk)
+    if not words:
+        return HttpResponse("No words for today", status=404)
+
+    result = generate_today_text(words)
+    if result is None:
+        return HttpResponse("Error generate the text", status=503)
+
+    context = {"sentences": result.split("\n")}
+
+    return render(request, "today.html", context)

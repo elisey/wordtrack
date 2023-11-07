@@ -12,4 +12,5 @@ urlpatterns = [
     path("word", views.add_word, name="add word"),
     path("word/<int:word_id>/audio", views.get_audio, name="get_audio"),
     path("word/<int:word_id>/example", views.get_example, name="get_example"),
+    path("today", views.today_text, name="today_text"),
 ]
