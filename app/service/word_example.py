@@ -45,19 +45,3 @@ Mijn ouders wonen al jarenlang in het huis. / My parents have been living in the
     result = re.sub(rf"\b{escape}\b", lambda x: f"<b>{x.group(0)}</b>", result, flags=re.IGNORECASE)
 
     return result
-
-
-def generate_today_text(words: list[str]) -> str | None:
-    openai.api_key = settings.OPENAI_API_KEY
-    words_str = ", ".join(words)
-    prompt = f"""Step 1. Make the text in Dutch. sentences must be connected in meaning. The text must have a story. Provide 10 sentences. Each sentence on new line. Before each sentence put sentence number. Use this words in it separated with ,
-{words_str}
-
-Step 2. Translate each sentence to English"""
-
-    context = [
-        {"role": "user", "content": prompt},
-    ]
-
-    result = _open_api_exchange(context)
-    return result

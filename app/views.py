@@ -1,3 +1,4 @@
+import dataclasses
 import json
 import logging
 import random
@@ -19,10 +20,10 @@ from django.views.decorators.http import require_GET
 from app.service import word_example
 from app.service.commands import Command as CommandModel
 from app.service.commands import Commands, apply_command
-from app.service.learning_history import add_history_event, get_todays_hard_words
+from app.service.learning_history import add_history_event
 from app.service.speech import SpeechStorage
+from app.service.today_page.page import get_today_page
 from app.service.word import AlreadyExistsError, WordPicker
-from app.service.word_example import generate_today_text
 
 
 @require_GET
@@ -178,15 +179,8 @@ def today_text(request: HttpRequest) -> HttpResponse:
         return HttpResponse("Invalid method", status=405)
     if not request.user.is_authenticated:
         return HttpResponseRedirect("admin/login/?next=/today")
-
-    words = get_todays_hard_words(request.user.pk)
-    if not words:
-        return HttpResponse("No words for today", status=404)
-
-    result = generate_today_text(words)
-    if result is None:
-        return HttpResponse("Error generate the text", status=503)
-
-    context = {"sentences": result.split("\n")}
-
+    today_page = get_today_page(request.user.pk)
+    if today_page is None:
+        return HttpResponse("Error generate the text", status=400)
+    context = dataclasses.asdict(today_page)
     return render(request, "today.html", context)

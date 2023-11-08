@@ -1,18 +1,47 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <style>
+        .foreign-sentence {
+            color: black;
+            display: block;
+        }
+
+        .native-sentence {
+            color: gray;
+            display: block;
+            font-size: 95%;
+        }
+    </style>
     <title>Sample HTML Page</title>
 </head>
 <body>
-    <h1>Today text</h1>
-    <a href="/">Training</a>
-    <a href="add_word">Add word</a>
-    <a href="admin">Admin</a>
-    <br>
-    <br>
-    {% for sentence in sentences %}
-    {{ sentence }}
-    <br>
+<h1>Today text</h1>
+<a href="/">Training</a>
+<a href="add_word">Add word</a>
+<a href="admin">Admin</a>
+<br>
+<br>
+<h2>Hard words</h2>
+<table style="border-collapse: collapse; margin: 0;">
+    <tr>
+        <th style="border: 1px solid black; text-align: left;">Foreign Word</th>
+        <th style="border: 1px solid black; text-align: left;">Native Word</th>
+    </tr>
+    {% for word in words %}
+        <tr>
+            <td style="border: 1px solid black;">{{ word.foreign }}</td>
+            <td style="border: 1px solid black;">{{ word.native }}</td>
+        </tr>
     {% endfor %}
+</table>
+
+<h2>Text</h2>
+{% for sentence in sentences %}
+    <span class="foreign-sentence">{{ sentence.foreign }}</span>
+    <span class="native-sentence">{{ sentence.native }}</span>
+    <br>
+{% endfor %}
+
 </body>
 </html>

@@ -14,6 +14,7 @@ gunicorn = "^21.2.0"
 django-stubs = "^4.2.5"
 python-dotenv = "^1.0.0"
 openai = "^0.28.1"
+jsonschema = "^4.19.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.0"
@@ -23,6 +24,7 @@ flake8 = "^6.1.0"
 mypy = "^1.5.1"
 ruff = "^0.0.289"
 pylint = "^2.17.5"
+types-jsonschema = "^4.19.0.4"
 
 [build-system]
 requires = ["poetry-core"]
@@ -47,6 +49,7 @@ profile = "black"
 [tool.ruff]
 ignore = ["E501", "ANN101", "ANN102", "S311", "S101", "PLR2004", "RUF001"]
 line-length = 120
+exclude = ["*/management/*"]
 extend-select = [
   "F",
   "W",
