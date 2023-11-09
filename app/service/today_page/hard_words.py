@@ -31,7 +31,7 @@ def get_hard_words(user_id: int, pick_day: PickDay) -> list[Word]:
     if pick_day == PickDay.TODAY:
         day = datetime.date.today()
     else:
-        day = datetime.date.today() - datetime.timedelta(days=2)
+        day = datetime.date.today() - datetime.timedelta(days=1)
 
     filter_by_commands = ["LEARNING_HARD", "REPEAT_RESET"]
 

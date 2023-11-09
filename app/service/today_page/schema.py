@@ -15,5 +15,6 @@ class Sentence:
 
 @dataclasses.dataclass
 class TodayPage:
+    title: str
     words: list[Word]
     sentences: list[Sentence]
