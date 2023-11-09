@@ -12,6 +12,16 @@ class PickDay(enum.Enum):
     YESTERDAY = enum.auto()
 
 
+def _filter_words(day: datetime.date, user_id: int, commands: list[str], limit: int) -> list[Word]:
+    query_result = (
+        LearningHistory.objects.filter(created_at__date=day, word__user_id=user_id, command__in=commands)
+        .values("word__native", "word__foreign")
+        .annotate(command_count=Count("id"))
+        .order_by("-command_count")[:limit]
+    )
+    return [Word(native=item["word__native"], foreign=item["word__foreign"]) for item in query_result]
+
+
 def get_hard_words(user_id: int, pick_day: PickDay) -> list[Word]:
     """
     Get words learned today.
@@ -21,14 +31,11 @@ def get_hard_words(user_id: int, pick_day: PickDay) -> list[Word]:
     if pick_day == PickDay.TODAY:
         day = datetime.date.today()
     else:
-        day = datetime.date.today() - datetime.timedelta(days=1)
+        day = datetime.date.today() - datetime.timedelta(days=2)
 
-    filter_by_command = "LEARNING_HARD"  # todo добавить еще статусы
+    filter_by_commands = ["LEARNING_HARD", "REPEAT_RESET"]
 
-    query_result = (
-        LearningHistory.objects.filter(created_at__date=day, word__user_id=user_id, command=filter_by_command)
-        .values("word__native", "word__foreign")
-        .annotate(command_count=Count("id"))
-        .order_by("-command_count")[:words_limit]
-    )
-    return [Word(native=item["word__native"], foreign=item["word__foreign"]) for item in query_result]
+    words = _filter_words(day, user_id, filter_by_commands, words_limit)
+    if len(words) < words_limit:
+        words += _filter_words(day, user_id, ["REPEAT_AGAIN"], words_limit - len(words))
+    return words

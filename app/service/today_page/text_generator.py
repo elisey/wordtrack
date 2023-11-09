@@ -8,7 +8,6 @@ from jsonschema.validators import validate
 from app.service.today_page.schema import Sentence
 
 
-# todo move to another file
 def _open_api_exchange(context: list[dict[str, str]]) -> str | None:
     try:
         completion = openai.ChatCompletion.create(
@@ -25,7 +24,7 @@ def _open_api_exchange(context: list[dict[str, str]]) -> str | None:
 def generate_today_text(words: list[str]) -> list[Sentence] | None:
     openai.api_key = settings.OPENAI_API_KEY
     words_str = ", ".join(words)
-    prompt = f"""Step 1. Make the text in Dutch. Sentences must be connected in meaning. The text must have a story. Preferable use present tense. Provide 10 sentences. Use this words in it separated with ,
+    prompt = f"""Step 1. Make the text in Dutch. Sentences must be connected in meaning. The text must have a story. Preferable use present tense. Provide 15 sentences. Use this words in it separated with ,
 {words_str}
 
 Step 2. Translate each sentence to English.
@@ -68,7 +67,6 @@ Example:
     try:
         data_dict = json.loads(response)
     except json.JSONDecodeError:
-        # todo add logging
         return None
 
     try:
