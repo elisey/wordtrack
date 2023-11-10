@@ -4,7 +4,7 @@ from pprint import pprint
 
 from django.core.management import BaseCommand
 
-from app.service.today_page.page import get_today_page
+from app.service.today_page import get_today_page
 
 
 class Command(BaseCommand):

@@ -22,16 +22,12 @@ def _filter_words(day: datetime.date, user_id: int, commands: list[str], limit: 
     return [Word(native=item["word__native"], foreign=item["word__foreign"]) for item in query_result]
 
 
-def get_hard_words(user_id: int, pick_day: PickDay) -> list[Word]:
+def get_hard_words(user_id: int, day: datetime.date) -> list[Word]:
     """
     Get words learned today.
     Sorted by number of attempts to learn it.
     """
     words_limit = 15
-    if pick_day == PickDay.TODAY:
-        day = datetime.date.today()
-    else:
-        day = datetime.date.today() - datetime.timedelta(days=1)
 
     filter_by_commands = ["LEARNING_HARD", "REPEAT_RESET"]
 

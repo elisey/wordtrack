@@ -72,3 +72,12 @@ class LearningHistory(models.Model):
     word = models.ForeignKey(Word, on_delete=models.CASCADE)
     command = models.CharField(max_length=20, choices=Commands.choices)
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+class TodayPage(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    date = models.DateField()
+    content = models.TextField()
+
+    class Meta:
+        unique_together = ["user", "date"]

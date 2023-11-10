@@ -22,7 +22,7 @@ from app.service.commands import Command as CommandModel
 from app.service.commands import Commands, apply_command
 from app.service.learning_history import add_history_event
 from app.service.speech import SpeechStorage
-from app.service.today_page.page import get_today_page
+from app.service.today_page import get_today_page
 from app.service.word import AlreadyExistsError, WordPicker
 
 
