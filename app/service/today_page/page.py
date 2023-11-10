@@ -3,8 +3,7 @@ import datetime
 from ..word import WordPicker
 from .hard_words import get_hard_words
 from .schema import TodayPage
-from .storage import get_content as get_cached_content
-from .storage import save_content as save_content_to_cache
+from .storage import get_storage
 from .text_generator import generate_today_text
 
 
@@ -37,7 +36,9 @@ def get_today_page(user_id: int) -> TodayPage | None:
     else:
         pick_day = datetime.date.today()
 
-    page = get_cached_content(user_id, pick_day)
+    cache = get_storage(user_id)
+
+    page = cache.get_content(pick_day)
     if page is not None:
         return page
 
@@ -45,5 +46,5 @@ def get_today_page(user_id: int) -> TodayPage | None:
     if page is None:
         return None
 
-    save_content_to_cache(user_id, pick_day, page)
+    cache.save_content(pick_day, page)
     return page

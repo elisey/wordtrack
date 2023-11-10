@@ -1,28 +1,13 @@
 import json
 
-import openai
-from django.conf import settings
 from jsonschema.exceptions import ValidationError
 from jsonschema.validators import validate
 
+from app.service.openai_client import get_openai_client
 from app.service.today_page.schema import Sentence
 
 
-def _open_api_exchange(context: list[dict[str, str]]) -> str | None:
-    try:
-        completion = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=context,
-            temperature=0.4,
-        )  # type:ignore[no-untyped-call]
-        response: str = completion.choices[0].message.content
-        return response
-    except openai.OpenAIError:
-        return None
-
-
 def generate_today_text(words: list[str]) -> list[Sentence] | None:
-    openai.api_key = settings.OPENAI_API_KEY
     words_str = ", ".join(words)
     prompt = f"""Step 1. Make the text in Dutch. Sentences must be connected in meaning. The text must have a story. Preferable use present tense. Provide 15 sentences. Use this words in it separated with ,
 {words_str}
@@ -47,11 +32,7 @@ Example:
     }}
 ]"""
 
-    context = [
-        {"role": "user", "content": prompt},
-    ]
-
-    response = _open_api_exchange(context)
+    response = get_openai_client().exchange(prompt)
     if response is None:
         return None
 

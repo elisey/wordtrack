@@ -40,11 +40,11 @@ tasks:
       - task: pylint
   test:
     cmds:
-      - pytest tests
+      - pytest app
   all:
     - task: format
     - task: lint
-    #- task: test
+    - task: test
 
   build:
     cmds:

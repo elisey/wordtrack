@@ -23,7 +23,7 @@ from app.service.commands import Commands, apply_command
 from app.service.learning_history import add_history_event
 from app.service.speech import SpeechStorage
 from app.service.today_page import get_today_page
-from app.service.word import AlreadyExistsError, WordPicker
+from app.service.word import AlreadyExistsError, NotFoundError, WordPicker
 
 
 @require_GET
@@ -75,7 +75,10 @@ def get_word(request: HttpRequest) -> HttpResponse:
         commands_response = [Command(text=command.text, command_id=command.command.value) for command in commands]
         inverted = word.is_inverted
     else:
-        word = word_picker.get_any_word(user_id)
+        try:
+            word = word_picker.get_any_word(user_id)
+        except NotFoundError:
+            return HttpResponse("No words found", status=404)
         commands_response = []
         inverted = random.choice([True, False, False])
 

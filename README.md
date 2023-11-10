@@ -34,7 +34,7 @@ docker compose run wordtrack_app python manage.py createsuperuser
 ```shell
 task format
 task lint
-task test
+task tests
 tasl all
 ```
 

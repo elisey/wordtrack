@@ -1,25 +1,9 @@
 import re
 
-import openai
-from django.conf import settings
-
-
-def _open_api_exchange(context: list[dict[str, str]]) -> str | None:
-    try:
-        completion = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=context,
-            temperature=0.4,
-        )  # type:ignore[no-untyped-call]
-        response: str = completion.choices[0].message.content
-        return response
-    except openai.OpenAIError:
-        return None
+from app.service.openai_client import get_openai_client
 
 
 def get_example(word: str) -> str | None:
-    openai.api_key = settings.OPENAI_API_KEY
-
     prompt = f"""Дано слово на нидерландском - {word}. Твоя задача
 1. Составлять простое предложение на нидерландском языке используя это слово.
 2. Переводить предложение на английский язык
@@ -31,11 +15,7 @@ Het huis heeft een rode voordeur en witte muren. / The house has a red front doo
 In het huis zijn er grote ramen die veel licht binnenlaten. / In the house, there are large windows that let in a lot of light.
 Mijn ouders wonen al jarenlang in het huis. / My parents have been living in the house for many years."""
 
-    context = [
-        {"role": "user", "content": prompt},
-    ]
-
-    result = _open_api_exchange(context)
+    result = get_openai_client().exchange(prompt)
     if result is None:
         return None
     result = result.replace("\n", "<br>\n")
