@@ -97,7 +97,8 @@ class Word:
         self.__to_repeat_state(24 * 60)
 
     def set_learn_result_already_know(self) -> None:
-        self.__to_repeat_state(30 * 24 * 60)
+        num_of_days = random.randint(20, 40)
+        self.__to_repeat_state(num_of_days * 24 * 60)
 
     def set_learn_result_drop(self) -> None:
         self.status = Status.DELETE
